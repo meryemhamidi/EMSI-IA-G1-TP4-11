@@ -22,10 +22,23 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.List;
 import java.util.Scanner;
+import java.util.logging.ConsoleHandler;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 public class RagNaif {
 
+    public static void configureLogger() {
+        Logger packageLogger = Logger.getLogger("dev.langchain4j");
+        packageLogger.setLevel(Level.FINE);
+        ConsoleHandler handler = new ConsoleHandler();
+        handler.setLevel(Level.FINE);
+        packageLogger.addHandler(handler);
+    }
+
     public static void main(String[] args) throws Exception {
+
+        configureLogger();
 
         DocumentParser documentParser = new ApacheTikaDocumentParser();
 
@@ -54,6 +67,7 @@ public class RagNaif {
         ChatModel model = GoogleAiGeminiChatModel.builder()
                 .apiKey(cle)
                 .temperature(0.3)
+                .logRequestsAndResponses(true)
                 .modelName("gemini-2.5-flash")
                 .build();
 
@@ -61,7 +75,7 @@ public class RagNaif {
                 .embeddingStore(embeddingStore)
                 .embeddingModel(embeddingModel)
                 .maxResults(2)
-                .minScore(0.5)
+                .minScore(0.8)
                 .build();
 
         var memory = MessageWindowChatMemory.withMaxMessages(10);
